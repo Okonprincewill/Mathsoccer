@@ -1,5 +1,5 @@
 // MathSoccer Service Worker - works with base64 version - FIXED for iPhone + Android - Mathsoccer repo
-const CACHE_NAME = 'mathsoccer-v5-base64';
+const CACHE_NAME = 'mathsoccer-v6-fix-selective';
 
 const urlsToCache = [
   '/Mathsoccer/',
