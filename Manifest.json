@@ -1,9 +1,9 @@
 {
-  "name": "MathSoccer - AI does the math. You score the goals.",
-  "short_name": "MathSoccer",
+  "name": "Mathsoccer - AI does the math. You score the goals.",
+  "short_name": "Mathsoccer",
   "description": "Every Mathsoccer move features the four pillars of all mathematics.  Multiplication, division, factors and inequalities become second nature through gameplay. AI does the math. You score the goals. Free to play.",
-  "start_url": "/MATHSOCCER-4aSide-/",
-  "scope": "/MATHSOCCER-4aSide-/",
+  "start_url": "/Mathsoccer/",
+  "scope": "/Mathsoccer/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
@@ -19,7 +19,7 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
   "screenshots": [
     {
       "src": "screenshot1.png",

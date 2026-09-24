@@ -2,9 +2,9 @@
 // MathSoccer Service Worker - works with base64 version
 const CACHE_NAME = 'mathsoccer-v4-base64';
 const urlsToCache = [
-  '/MATHSOCCER-4aSide-/',
-  '/MATHSOCCER-4aSide-/index.html',
-  '/MATHSOCCER-4aSide-/manifest.json'
+  '/Mathsoccer/',
+  '/Mathsoccer/index.html',
+  '/Mathsoccer/manifest.json'
 ];
 
 self.addEventListener('install', event => {
