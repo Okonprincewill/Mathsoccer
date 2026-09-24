@@ -9251,7 +9251,9 @@ function animatePulse(timestamp) {
     renderAnswer();
     renderButtons();
     renderStats();
-    
+    if (!matchInProgress) {
+    statDraw(va, vb, vc, vd, ve, vf, vg, vh);
+}
     // FIX 4: DO NOT call statDraw here - va..vh are stale and scatter texts
     // if (!matchInProgress){ statDraw(va, vb, vc, vd, ve, vf, vg, vh); } <- REMOVED        
     
@@ -9353,6 +9355,9 @@ function animatePulse(timestamp) {
         renderAnswer();
         renderButtons();
         renderStats();      
+        if (!matchInProgress) {
+    statDraw(va, vb, vc, vd, ve, vf, vg, vh);
+}
        return;
     }
     
