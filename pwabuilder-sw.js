@@ -1,66 +1,149 @@
-// MathSoccer Service Worker - works with base64 version - FIXED for iPhone + Android - Mathsoccer repo
-const CACHE_NAME = 'mathsoccer-v6-fix-selective';
+// MathSoccer Service Worker
+// Mathsoccer repo - offline PWA version
 
-const urlsToCache = [
+const CACHE_NAME = 'mathsoccer-v7-audio';
+
+const CORE_FILES = [
   '/Mathsoccer/',
   '/Mathsoccer/index.html',
-  '/Mathsoccer/manifest.json'
+  '/Mathsoccer/manifest.json',
+  '/Mathsoccer/logo192.png',
+  '/Mathsoccer/logo512.png'
 ];
 
-// iPhone + Android: Don't fail install if optional assets missing
+const AUDIO_FILES = [
+'/Mathsoccer/explode.mp3',
+'/Mathsoccer/Mathsoccer_touch.mp3',
+'/Mathsoccer/cheer_goal.mp3',
+'/Mathsoccer/ball.mp3',
+'/Mathsoccer/kick.mp3',
+'/Mathsoccer/crowd_louds.mp3',
+'/Mathsoccer/Mathsoccer_cool.mp3',
+'/Mathsoccer/maths.mp3',
+'/Mathsoccer/disappointed.mp3'
+];
+
+const OPTIONAL_FILES = [
+  '/Mathsoccer/screenshot1.png',
+  '/Mathsoccer/screenshot2.png',
+  '/Mathsoccer/screenshot3.png',
+  '/Mathsoccer/screenshot4.png'
+];
+
+const ALL_FILES = [
+  ...CORE_FILES,
+  ...AUDIO_FILES,
+  ...OPTIONAL_FILES
+];
+
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      // Cache core files - even if one fails, don't break install
-      return cache.addAll(urlsToCache).catch(err => {
-        console.log('Core cache failed, caching individually', err);
-        // Try one by one - base64 index.html is large (2.5MB), may fail on low storage iPhone
-        return Promise.allSettled(
-          urlsToCache.map(url => cache.add(url).catch(e => console.log('Failed to cache', url)))
-        );
-      });
-    }).then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(async cache => {
+
+      // Cache each file individually.
+      // One missing file must NOT stop the PWA from installing.
+      await Promise.all(
+        ALL_FILES.map(async url => {
+          try {
+            await cache.add(url);
+            console.log('Cached:', url);
+          } catch (error) {
+            console.log('Could not cache:', url, error);
+          }
+        })
+      );
+
+      await self.skipWaiting();
+    })
   );
 });
+
 
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(
-      keys.map(k => { if (k !== CACHE_NAME) return caches.delete(k); })
-    )).then(() => self.clients.claim())
+    caches.keys().then(keys =>
+      Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            console.log('Deleting old cache:', key);
+            return caches.delete(key);
+          }
+        })
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-self.addEventListener('fetch', event => {
-  // iPhone + Android fix: only handle GET requests for our origin
-  if (event.request.method !== 'GET') return;
-  if (!event.request.url.startsWith(self.location.origin)) return;
 
-  // For navigation requests (iPhone standalone needs this)
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('/Mathsoccer/index.html') || caches.match('/Mathsoccer/');
-      })
-    );
+self.addEventListener('fetch', event => {
+
+  if (event.request.method !== 'GET') return;
+
+  if (!event.request.url.startsWith(self.location.origin)) {
     return;
   }
 
+  // ==========================================
+  // PAGE NAVIGATION
+  // ==========================================
+
+  if (event.request.mode === 'navigate') {
+
+    event.respondWith(
+      fetch(event.request)
+        .then(response => {
+
+          // Keep the latest index available offline.
+          if (response.ok) {
+            const copy = response.clone();
+
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put('/Mathsoccer/index.html', copy);
+            });
+          }
+
+          return response;
+        })
+        .catch(() => {
+          return caches.match('/Mathsoccer/index.html');
+        })
+    );
+
+    return;
+  }
+
+
+  // ==========================================
+  // AUDIO / IMAGES / MANIFEST / OTHER FILES
+  // ==========================================
+
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      if (cached) return cached;
-      return fetch(event.request).then(response => {
-        // Don't cache base64 index.html again (already 2.5MB)
-        // Only cache icons, manifest, screenshots for Android/iPhone offline
-        if (response.ok && !event.request.url.includes('index.html')) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      }).catch(() => {
-        // Fallback for offline - important for iPhone black screen
-        return caches.match('/Mathsoccer/index.html');
-      });
+    caches.match(event.request).then(cachedResponse => {
+
+      // Offline/cache-first
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+
+      // Not cached — get it from network.
+      return fetch(event.request)
+        .then(response => {
+
+          if (response.ok) {
+            const copy = response.clone();
+
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, copy);
+            });
+          }
+
+          return response;
+        })
+        .catch(() => {
+
+          // Last-resort offline page.
+          return caches.match('/Mathsoccer/index.html');
+        });
     })
   );
 });
