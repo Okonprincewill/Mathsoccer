@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <title>MathSoccer - AI does the math. You score the goals.</title>
+    <title>Mathsoccer - AI does the math. You score the goals.</title>
 
 <meta name="description" content="Every Mathsoccer move features the four pillars of all mathematics.  Multiplication, division, factors and inequalities become second nature through gameplay. AI does the math. You score the goals. Free to play.">
 
@@ -21,7 +21,7 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "MathSoccer",
+  "name": "Mathsoccer",
   "description": "Every move features the four pillars of all mathematics.  Multiplication, division, factors and inequalities become second nature through gameplay. AI does the math. You score the goals.",
   "url": "https://okonprincewill.github.io/Mathsoccer/",
   "applicationCategory": "Game",
@@ -1324,13 +1324,15 @@ const miss = new Audio('data:audio/mpeg;base64,//vURAAO5GN1oojFZVCLzlRyIKz0Vd3Ow
 });
 
 // Fix iPhone black screen - ensure canvas visible and audio context resumed
-document.addEventListener('touchend', function() {
-    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
-    // Force redraw if stuck on black
-    if (typeof redrawGameScreen === 'function' && typeof g !== 'undefined' && g===0) {
-        try { redrawGameScreen(); } catch(e){}
-    }
-}, {once:true, passive:true});
+// iPhone ONLY fix - does not run on Android
+if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    document.addEventListener('touchend', function() {
+        if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+        if (typeof redrawGameScreen === 'function' && typeof g !== 'undefined' && g===0) {
+            try { redrawGameScreen(); } catch(e){}
+        }
+    }, {once:true, passive:true});
+}
 
 // Fix all audio elements for iPhone
 [explode, touch, goal, ball, kick, loud, welcome, inland, miss].forEach(a => {
@@ -1579,9 +1581,9 @@ function redrawGameScreen() {
     if (!ctx) return;
     ctx.clearRect(0, 0, cW, cH);
     
-    if (g === 0) {
-        logo();
+    if (g === 0) {        
         var splashMath= setTimeout(showLandingPage,3000);
+        logo();
     } else if (g === 1) {
         renderAnswer();
         renderButtons();
@@ -9251,11 +9253,8 @@ function animatePulse(timestamp) {
     renderAnswer();
     renderButtons();
     renderStats();
-    if (!matchInProgress) {
-    statDraw(va, vb, vc, vd, ve, vf, vg, vh);
-}
-    // FIX 4: DO NOT call statDraw here - va..vh are stale and scatter texts
-    // if (!matchInProgress){ statDraw(va, vb, vc, vd, ve, vf, vg, vh); } <- REMOVED        
+    
+    if (!matchInProgress){ statDraw(va, vb, vc, vd, ve, vf, vg, vh); }   
     
     // PHASE 1: PULSATING FRAME (0% - 50%)
     if (progress < 0.5) {
@@ -9357,7 +9356,7 @@ function animatePulse(timestamp) {
         renderStats();      
         if (!matchInProgress) {
     statDraw(va, vb, vc, vd, ve, vf, vg, vh);
-}
+    }
        return;
     }
     
@@ -15197,7 +15196,6 @@ loadAchievements();
         // AI MATCH BUTTON
         // ===========================================
         if (page.id === 'AI') {
-        g=15;
             ctx.fillStyle = 'rgba(0,0,0,0.6)';
             ctx.beginPath();
             ctx.arc(page.x + 14, page.y + 14, 45, 0, Math.PI * 2);
@@ -17009,7 +17007,6 @@ window.addEventListener('resize', function() {
     }, 300);  // Wait 300ms after resize stops
 });
     window.addEventListener('orientationchange', function() {
-    g = 0;
         setTimeout(resizeCanvas, 300);
     });
     
@@ -17024,6 +17021,7 @@ window.addEventListener('resize', function() {
             setupDesktopControls();
             setupKeyboardControls();
             loadPlayerData(); 
+g = 0;
 loadTags();
 loadTagsVisibility();
 checkExistingUser();
@@ -17052,11 +17050,11 @@ initcanvas();
 
 <!-- SEO CONTENT - Visible to search engines, hidden from humans -->
 <div style="position:absolute; top:0; left:-9999px; width:1px; height:1px; overflow:hidden; color:#000; background:#000;">
-  <h1>MathSoccer – The AI Does the Math, You Score the Goals</h1>
-  <p>MathSoccer is a free online strategy game where the AI handles all calculations for you. You strategically block and create chances to score goals. Built for ages 8 to adult.</p>
+  <h1>Mathsoccer – The AI Does the Math, You Score the Goals</h1>
+  <p>Mathsoccer is a free online strategy game where the AI handles all calculations for you. You strategically block and create chances to score goals. Built for ages 8 to adult.</p>
   
-  <h2>Four Foundational Math Topics MathSoccer Covers</h2>
-<p>MathSoccer unconsciously teaches four core mathematical concepts that are the building blocks for all higher mathematics:</p>
+  <h2>Four Foundational Math Topics Mathsoccer Covers</h2>
+<p>Mathsoccer unconsciously teaches four core mathematical concepts that are the building blocks for all higher mathematics:</p>
 <ul>
   <li><strong>Multiplication:</strong> Every time you move, the AI calculates: visited number = access factor × emerging factor. You learn multiplication patterns without memorizing tables.</li>
   <li><strong>Division:</strong> When the visited number is smaller, the AI divides: visited number = access factor ÷ emerging factor. Division becomes intuitive through gameplay.</li>
@@ -17064,8 +17062,8 @@ initcanvas();
   <li><strong>Inequalities:</strong> The AI compares numbers to determine if multiplication or division applies. You build number sense through constant comparison.</li>
 </ul>
 
-<h2>Unconscious Learning: How MathSoccer Makes Math Easy</h2>
-<p>MathSoccer uses a method called unconscious learning. You don't study math — you play soccer. The AI handles every calculation, showing you the math visually with every move. Over time, your brain absorbs the patterns:</p>
+<h2>Unconscious Learning: How Mathsoccer Makes Math Easy</h2>
+<p>Mathsoccer uses a method called unconscious learning. You don't study math — you play soccer. The AI handles every calculation, showing you the math visually with every move. Over time, your brain absorbs the patterns:</p>
 <ul>
   <li><strong>Pattern Recognition:</strong> You see which numbers connect and why.</li>
   <li><strong>Number Sense:</strong> You develop an instinct for factors and multiples.</li>
@@ -17127,12 +17125,12 @@ initcanvas();
   </ul>
   
   <h2>Privacy Policy</h2>
-  <p>MathSoccer is designed for offline play. We do NOT collect personal names, email addresses, location data, or device identifiers. All game data (stats, settings, and history) is stored locally on your device. Nothing is uploaded to any server or cloud. We do not share data with third-party advertisers or analytics services.</p>
+  <p>Mathsoccer is designed for offline play. We do NOT collect personal names, email addresses, location data, or device identifiers. All game data (stats, settings, and history) is stored locally on your device. Nothing is uploaded to any server or cloud. We do not share data with third-party advertisers or analytics services.</p>
   
   <h2>Terms of Service</h2>
-  <p>MathSoccer is a game created by Princewill Okon. First publicly presented to the Nigerian Minister of Science and Technology in 2017. All code, artwork, and game mechanics are the exclusive property of Princewill Okon. All rights reserved. Do not reproduce any part without written permission.</p>
+  <p>Mathsoccer is a game created by Princewill Okon. First publicly presented to the Nigerian Minister of Science and Technology in 2017. All code, artwork, and game mechanics are the exclusive property of Princewill Okon. All rights reserved. Do not reproduce any part without written permission.</p>
   
-  <p><strong>Concentrate. Calculate. Celebrate. Welcome to MathSoccer.</strong></p>
+  <p><strong>Concentrate. Calculate. Celebrate. Welcome to Mathsoccer.</strong></p>
 </div>
 <!-- END SEO CONTENT -->
 
@@ -17169,8 +17167,8 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
         console.log('🔍 Registering SW...');
         navigator.serviceWorker.register(
-            '/MATHSOCCER-4aSide-/pwabuilder-sw.js',
-            { scope: '/MATHSOCCER-4aSide-/' }
+            '/Mathsoccer/pwabuilder-sw.js',
+            { scope: '/Mathsoccer/' }
         ).then(reg => {
             console.log('✅ SW registered', reg.scope);
         }).catch(err => {
