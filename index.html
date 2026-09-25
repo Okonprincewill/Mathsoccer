@@ -1223,7 +1223,7 @@ let answerTagsVisible = false;
 // At the top with your other variables
 let isAppInstalled = false;
 // Install button
-let deferredPrompt;
+//let deferredPrompt;
 
 // On page load, check if already installed
 window.addEventListener('load', function() {
@@ -17157,6 +17157,7 @@ initcanvas();
 // SERVICE WORKER REGISTRATION - SINGLE CLEAN VERSION (base64 retained)
 // ============================================================
 // isAppInstalled and deferredPrompt already declared earlier
+
 if (typeof deferredPrompt === "undefined") var deferredPrompt = null;
 
 // Detect if already installed
