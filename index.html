@@ -10,7 +10,7 @@
 
     <title>Mathsoccer - AI does the math. You score the goals.</title>
 
-<meta name="description" content="Every Mathsoccer move features the four pillars of all mathematics.  Multiplication, division, factors and inequalities become second nature through gameplay. AI does the math. You score the goals. Free to play.">
+<meta name="description" content="The world's only factor handoff system combining chess, maths and football. Score goals on a chess board using multiplication, division, factors and inequality.">
 
 <meta name="robots" content="index, follow">
 
@@ -22,7 +22,7 @@
   "@context": "https://schema.org",
   "@type": "WebApplication",
   "name": "Mathsoccer",
-  "description": "Every move features the four pillars of all mathematics.  Multiplication, division, factors and inequalities become second nature through gameplay. AI does the math. You score the goals.",
+  "description": "The world's only factor handoff system combining chess, maths and football. Score goals on a chess board using multiplication, division, factors and inequality. AI does the math. You score the goals.",
   "url": "https://okonprincewill.github.io/Mathsoccer/",
   "applicationCategory": "Game",
   "operatingSystem": "All",
@@ -1249,22 +1249,14 @@ document.getElementById('installButton')?.addEventListener('click', async () => 
     isAppInstalled = true;
 });
 
-// ✅ Lock orientation on phones
-
-if (getScreenType() === 'phone') {
-    screen.orientation.lock('portrait').catch(() => {});
-}
 
 // ✅ Treat tablets consistently regardless of orientation
+
 function getScreenType() {
     const w = window.innerWidth;
-    const h = window.innerHeight;
-    
-    // Use the LARGER dimension to determine device type
-    const maxDim = Math.max(w, h);
-    
-    if (maxDim < 768) return 'phone';
-    if (maxDim >= 768 && maxDim < 1024) return 'tablet';
+
+    if (w < 768) return 'phone';
+    if (w < 1024) return 'tablet';
     return 'desktop';
 }
 
@@ -14439,118 +14431,26 @@ function showLandingPage() {
     
     renderAnswer();
     
-    // ===========================================
-    // MESSAGE 1: AI Explanation (TOP) — X+20, Y unchanged
-    // ===========================================
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.15)';
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 3;
-    
-    ctx.fillStyle = 'Green';
-    ctx.fillRect(30, 192, 300, 70);  // X+20 (10+20=30), Y unchanged
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(30, 193, 300, 70);
-    ctx.restore();
-    
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.08)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.fillStyle = '#CFC';
-    ctx.fillRect(32, 194, 296, 66);  // X+20
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.restore();
-    
-    ctx.fillStyle = 'black';
-    ctx.font = 'bold 14px fantasy, papyrus';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText("Unconscious learning through gameplay. ", 180, 206);  // X+20 (160+20=180)
-    ctx.fillText("No memorization. No drill. ", 180, 226);
-    ctx.fillText("AI does the math. You score the goals.", 180, 246);
-    
-    // ===========================================
-    // MESSAGE 2: Win Conditions (MIDDLE) — X+20, Y unchanged
-    // ===========================================
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.15)';
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 3;
-    
-    ctx.fillStyle = 'Green';
-    ctx.fillRect(30, 337, 300, 70);  // X+20, Y unchanged
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(30, 338, 300, 70);
-    ctx.restore();
-    
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.08)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.fillStyle = '#CFC';
-    ctx.fillRect(32, 339, 296, 66);  // X+20
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.restore();
-    
-    ctx.fillStyle = 'black';
-    ctx.font = 'bold 14px fantasy, papyrus';
-    ctx.fillText("The four pillars of all mathematics. ", 180, 351);
-    ctx.fillText("Every move features multiplication, ", 180, 371);   
-    ctx.fillText("division, factors and inequalities. ", 180, 391);  // X+20    
-    
-    // ===========================================
-    // MESSAGE 3: How to Play (BOTTOM) — X+20, Y unchanged
-    // ===========================================
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.15)';
-    ctx.shadowBlur = 8;
-    ctx.shadowOffsetX = 2;
-    ctx.shadowOffsetY = 3;
-    
-    ctx.fillStyle = 'Green';
-    ctx.fillRect(30, 481, 300, 70);  // X+20, Y unchanged
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(30, 482, 300, 70);
-    ctx.restore();
-    
-    ctx.save();
-    ctx.shadowColor = 'rgba(0,0,0,0.08)';
-    ctx.shadowBlur = 4;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
-    ctx.fillStyle = '#CFC';
-    ctx.fillRect(32, 483, 296, 66);  // X+20
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
-    ctx.restore();
-    
-    ctx.fillStyle = 'black';
-    ctx.font = 'bold 14px fantasy, papyrus';
-    ctx.fillText("How to play: Touch a token and", 180, 495);  // X+20
-    ctx.fillText("a number framed in your color.", 180, 515);
-    ctx.fillText("Find a way to get to the top number 1.", 180, 535);
+    // BOARD 1 - TOP
+draw3DBoard(ctx, 30, 192, 300, 70, 4, '#2E8B57', '#1e4d33', '#CFC', '#A8D5A8');
+ctx.fillStyle='black'; ctx.font='bold 14px fantasy, papyrus'; ctx.textAlign='center'; ctx.textBaseline='middle';
+ctx.fillText("The world's only factor handoff system ", 180, 206);
+ctx.fillText("combining chess, maths and football.", 180, 226);
+ctx.fillText("AI does the math. You score the goals.", 180, 246);
+
+// BOARD 2 - MIDDLE
+draw3DBoard(ctx, 30, 337, 300, 70, 4, '#2E8B57', '#1e4d33', '#CFC', '#A8D5A8');
+ctx.fillStyle='black'; ctx.font='bold 14px fantasy, papyrus'; ctx.textAlign='center'; ctx.textBaseline='middle';
+ctx.fillText("Score goals on a chess board using ", 180, 351);
+ctx.fillText("multiplication, division, inequalities and", 180, 371);
+ctx.fillText("factors - the four pillars of mathematics. ", 180, 391);
+
+// BOARD 3 - BOTTOM
+draw3DBoard(ctx, 30, 481, 300, 70, 4, '#2E8B57', '#1e4d33', '#CFC', '#A8D5A8');
+ctx.fillStyle='black'; ctx.font='bold 14px fantasy, papyrus'; ctx.textAlign='center'; ctx.textBaseline='middle';
+ctx.fillText("How to play: Touch a token and", 180, 495);
+ctx.fillText("a number framed in your color.", 180, 515);
+ctx.fillText("Find a way to get to the top number 1.", 180, 535);
     
     ctx.fillStyle = '#CFC';
     ctx.font = 'bold 12px fantasy, papyrus';
@@ -14575,9 +14475,6 @@ function showLandingPage() {
     drawLandingButton3D('Rules', 289, 582, '#CFC', 'black');      // X+20 (269+20=289), Y unchanged
 }
 
-// ===========================================
-// 3D LANDING BUTTON (Preserves original style)
-// ===========================================
 
 function drawLandingButton3D(text, x, y, bgColor, textColor) {
     const cx = x + 14;
@@ -14647,6 +14544,75 @@ function drawLandingButton3D(text, x, y, bgColor, textColor) {
     ctx.restore();
 }
 
+// 3D Mathsoccer Boards — drop-in replacement
+// Depth = 12px extruded block, premium bevel + shadows
+
+function draw3DBoard(ctx, x, y, w, h, depth, topColor, sideColor, innerTopColor, innerSideColor) {
+  const inset = 2;
+  const ix = x + inset, iy = y + inset, iw = w - inset*2, ih = h - inset*2;
+  const innerDepth = 2;
+  const d = depth; // 4
+
+  // shadow - soft
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,0.28)';
+  ctx.shadowColor='rgba(0,0,0,0.4)'; ctx.shadowBlur=7;
+  ctx.beginPath(); ctx.ellipse(x+w/2+d*0.3, y+h+d+3, w*0.32, 3.5, 0,0,Math.PI*2); ctx.fill(); 
+  ctx.restore();
+
+  // outer sides - slight
+  ctx.fillStyle = sideColor;
+  ctx.beginPath(); ctx.moveTo(x+w,y); ctx.lineTo(x+w+d,y+d*0.6); ctx.lineTo(x+w+d,y+h+d*0.6); ctx.lineTo(x+w,y+h); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#143626';
+  ctx.beginPath(); ctx.moveTo(x,y+h); ctx.lineTo(x+d*0.6,y+h+d*0.6); ctx.lineTo(x+w+d,y+h+d*0.6); ctx.lineTo(x+w,y+h); ctx.closePath(); ctx.fill();
+
+  // outer top - GLOSSY gradient
+  const gradOuter = ctx.createLinearGradient(x, y, x, y+h);
+  gradOuter.addColorStop(0, '#4CAF7A');   // light green top shine
+  gradOuter.addColorStop(0.18, '#2E8B57'); // your green
+  gradOuter.addColorStop(0.75, '#236843');
+  gradOuter.addColorStop(1, '#17462e');
+  ctx.fillStyle = gradOuter;
+  ctx.fillRect(x,y,w,h);
+
+  // top specular highlight - glossy streak
+  ctx.save();
+  ctx.fillStyle = 'rgba(255,255,255,0.38)';
+  ctx.beginPath();
+  ctx.moveTo(x, y+1);
+  ctx.lineTo(x+w, y+1);
+  ctx.lineTo(x+w, y+h*0.42);
+  ctx.lineTo(x, y+h*0.28);
+  ctx.closePath();
+  ctx.fill();
+  // thin bright line
+  ctx.fillStyle = 'rgba(255,255,255,0.75)';
+  ctx.fillRect(x, y+1, w, 1.5);
+  ctx.restore();
+
+  ctx.strokeStyle='rgba(0,0,0,0.7)'; ctx.lineWidth=1.5; ctx.strokeRect(x+0.75,y+0.75,w-1.5,h-1.5);
+
+  // inner block sides
+  ctx.fillStyle=innerSideColor;
+  ctx.beginPath(); ctx.moveTo(ix+iw,iy); ctx.lineTo(ix+iw+innerDepth,iy+innerDepth*0.6); ctx.lineTo(ix+iw+innerDepth,iy+ih+innerDepth*0.6); ctx.lineTo(ix+iw,iy+ih); ctx.closePath(); ctx.fill();
+  ctx.fillStyle='#8fbf8f';
+  ctx.beginPath(); ctx.moveTo(ix,iy+ih); ctx.lineTo(ix+innerDepth*0.6,iy+ih+innerDepth*0.6); ctx.lineTo(ix+iw+innerDepth,iy+ih+innerDepth*0.6); ctx.lineTo(ix+iw,iy+ih); ctx.closePath(); ctx.fill();
+
+  // inner top - GLOSSY mint
+  const gradInner = ctx.createLinearGradient(ix, iy, ix, iy+ih);
+  gradInner.addColorStop(0, '#EFFFF2');
+  gradInner.addColorStop(0.22, '#CCFFCC');
+  gradInner.addColorStop(0.55, '#B6EFB6');
+  gradInner.addColorStop(1, '#9ED99E');
+  ctx.fillStyle = gradInner;
+  ctx.fillRect(ix,iy,iw,ih);
+
+  // inner glass shine
+  ctx.fillStyle = 'rgba(255,255,255,0.85)';
+  ctx.fillRect(ix, iy, iw, 2);
+  ctx.fillStyle = 'rgba(255,255,255,0.22)';
+  ctx.fillRect(ix, iy+2, iw, ih*0.38);
+}
   
        //identifying clicked coordinates for picking
 function handleButtonClick(touchX, touchY) {
@@ -17052,6 +17018,7 @@ initcanvas();
 <!-- SEO CONTENT - Visible to search engines, hidden from humans -->
 <div style="position:absolute; top:0; left:-9999px; width:1px; height:1px; overflow:hidden; color:#000; background:#000;">
   <h1>Mathsoccer – The AI Does the Math, You Score the Goals</h1>
+  <p>The world's only factor handoff system that combines chess, mathematics and football to form Mathsoccer, a concept of scoring goals on a chess board using the four pillars of mathematics: multiplication, division, factors and inequality. Simply unconscious learning through gameplay. AI does the math. You score the goals.</p>
   <p>Mathsoccer is a free online strategy game where the AI handles all calculations for you. You strategically block and create chances to score goals. Built for ages 8 to adult.</p>
   
   <h2>Four Foundational Math Topics Mathsoccer Covers</h2>

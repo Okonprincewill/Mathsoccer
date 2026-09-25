@@ -1,7 +1,7 @@
 // MathSoccer Service Worker
 // Mathsoccer repo - offline PWA version
 
-const CACHE_NAME = 'mathsoccer-v7-audio';
+const CACHE_NAME = 'mathsoccer-v10-audio';
 
 const CORE_FILES = [
   '/Mathsoccer/',
