@@ -3921,117 +3921,124 @@ ctx.fillStyle = playerColor;  // ← Changed from '#FFFFFF'
     draw3DGameOverButton('RESET', 255, 580, 70, 30, '#E74C3C', 'white'); // X+10
             draw3DGameOverButton('QUIT', 145, 620, 70, 30, '#555555', 'white'); // X+10
 
-    // === 3D PORTRAIT WITH PHOTO - 10px below QUIT, centered ===
-    const portraitX = 135;
-    const portraitY = 670; // QUIT 620+30+10
-    const portraitW = 90;
-    const portraitH = 110;
-    window._gameOverPortraitBox = { x: portraitX, y: portraitY, w: portraitW, h: portraitH };
+        // ===========================================
+    // 3D PORTRAIT WITH PHOTO - only if NO achievements unlocked
+    // ===========================================
+    const hasAchievements = newAchievementsThisGame && newAchievementsThisGame.length > 0;
 
-    ctx.save();
-    // Shadow
-    ctx.shadowColor = 'rgba(0,0,0,0.7)';
-    ctx.shadowBlur = 15;
-    ctx.shadowOffsetX = 3;
-    ctx.shadowOffsetY = 5;
-    const frameGrad = ctx.createLinearGradient(portraitX, portraitY, portraitX, portraitY + portraitH);
-    frameGrad.addColorStop(0, '#FFD700');
-    frameGrad.addColorStop(0.3, '#FFA500');
-    frameGrad.addColorStop(0.7, '#B8860B');
-    frameGrad.addColorStop(1, '#8B6914');
-    ctx.beginPath();
-    ctx.roundRect(portraitX, portraitY, portraitW, portraitH, 8);
-    ctx.fillStyle = frameGrad;
-    ctx.fill();
-    ctx.shadowBlur = 0;
-    ctx.shadowOffsetX = 0;
-    ctx.shadowOffsetY = 0;
+    if (!hasAchievements) {
+        const portraitX = 135;
+        const portraitY = 670; // QUIT 620+30+10
+        const portraitW = 90;
+        const portraitH = 110;
+        window._gameOverPortraitBox = { x: portraitX, y: portraitY, w: portraitW, h: portraitH };
 
-    // Inner photo area with clip
-    ctx.save();
-    ctx.beginPath();
-    ctx.roundRect(portraitX + 4, portraitY + 4, portraitW - 8, portraitH - 8, 6);
-    ctx.clip();
-    ctx.fillStyle = '#0a0a0a';
-    ctx.fillRect(portraitX + 4, portraitY + 4, portraitW - 8, portraitH - 8);
-
-    // === DRAW REAL PHOTO IF AVAILABLE ===
-    if (typeof playerPhotoData !== 'undefined' && playerPhotoData && playerPhotoData.complete && playerPhotoData.naturalWidth > 0) {
-        // Cover fit
-        const imgW = portraitW - 8;
-        const imgH = portraitH - 8;
-        const imgRatio = playerPhotoData.naturalWidth / playerPhotoData.naturalHeight;
-        const areaRatio = imgW / imgH;
-        let drawW, drawH, drawX, drawY;
-        if (imgRatio > areaRatio) {
-            drawH = imgH;
-            drawW = imgH * imgRatio;
-            drawX = portraitX + 4 + (imgW - drawW) / 2;
-            drawY = portraitY + 4;
-        } else {
-            drawW = imgW;
-            drawH = imgW / imgRatio;
-            drawX = portraitX + 4;
-            drawY = portraitY + 4 + (imgH - drawH) / 2;
-        }
-        ctx.drawImage(playerPhotoData, drawX, drawY, drawW, drawH);
-    } else {
-        // No photo - draw MathSoccer O icon with gradient as placeholder
-        const iconCX = portraitX + portraitW/2;
-        const iconCY = portraitY + 32;
-        const iconR = 15;
-        const oGrad = ctx.createLinearGradient(iconCX - iconR, iconCY, iconCX + iconR, iconCY);
-        oGrad.addColorStop(0, '#eaffea');
-        oGrad.addColorStop(0.5, '#CFC');
-        oGrad.addColorStop(1, '#4a7a4a');
+        ctx.save();
+        // Shadow
+        ctx.shadowColor = 'rgba(0,0,0,0.7)';
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 3;
+        ctx.shadowOffsetY = 5;
+        const frameGrad = ctx.createLinearGradient(portraitX, portraitY, portraitX, portraitY + portraitH);
+        frameGrad.addColorStop(0, '#FFD700');
+        frameGrad.addColorStop(0.3, '#FFA500');
+        frameGrad.addColorStop(0.7, '#B8860B');
+        frameGrad.addColorStop(1, '#8B6914');
         ctx.beginPath();
-        ctx.arc(iconCX, iconCY, iconR, 0, 2 * Math.PI);
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = oGrad;
+        ctx.roundRect(portraitX, portraitY, portraitW, portraitH, 8);
+        ctx.fillStyle = frameGrad;
+        ctx.fill();
+        ctx.shadowBlur = 0;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+
+        // Inner photo area with clip
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(portraitX + 4, portraitY + 4, portraitW - 8, portraitH - 8, 6);
+        ctx.clip();
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(portraitX + 4, portraitY + 4, portraitW - 8, portraitH - 8);
+
+        // === DRAW REAL PHOTO IF AVAILABLE ===
+        if (typeof playerPhotoData !== 'undefined' && playerPhotoData && playerPhotoData.complete && playerPhotoData.naturalWidth > 0) {
+            const imgW = portraitW - 8;
+            const imgH = portraitH - 8;
+            const imgRatio = playerPhotoData.naturalWidth / playerPhotoData.naturalHeight;
+            const areaRatio = imgW / imgH;
+            let drawW, drawH, drawX, drawY;
+            if (imgRatio > areaRatio) {
+                drawH = imgH;
+                drawW = imgH * imgRatio;
+                drawX = portraitX + 4 + (imgW - drawW) / 2;
+                drawY = portraitY + 4;
+            } else {
+                drawW = imgW;
+                drawH = imgW / imgRatio;
+                drawX = portraitX + 4;
+                drawY = portraitY + 4 + (imgH - drawH) / 2;
+            }
+            ctx.drawImage(playerPhotoData, drawX, drawY, drawW, drawH);
+        } else {
+            // No photo - draw MathSoccer O icon as placeholder
+            const iconCX = portraitX + portraitW/2;
+            const iconCY = portraitY + 32;
+            const iconR = 15;
+            const oGrad = ctx.createLinearGradient(iconCX - iconR, iconCY, iconCX + iconR, iconCY);
+            oGrad.addColorStop(0, '#eaffea');
+            oGrad.addColorStop(0.5, '#CFC');
+            oGrad.addColorStop(1, '#4a7a4a');
+            ctx.beginPath();
+            ctx.arc(iconCX, iconCY, iconR, 0, 2 * Math.PI);
+            ctx.lineWidth = 3;
+            ctx.strokeStyle = oGrad;
+            ctx.stroke();
+            ctx.fillStyle = oGrad;
+            ctx.font = 'bold 14px fantasy, papyrus';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('=', iconCX, iconCY);
+            ctx.fillStyle = '#CFC';
+            ctx.font = 'bold 9px fantasy, papyrus';
+            ctx.fillText('NO PHOTO', iconCX, portraitY + 68);
+            ctx.fillStyle = '#666';
+            ctx.font = '7px fantasy, papyrus';
+            ctx.fillText('Tap O logo to add', iconCX, portraitY + 80);
+        }
+        ctx.restore(); // end clip
+
+        // Bevel + border
+        ctx.strokeStyle = 'rgba(255,255,255,0.25)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(portraitX + 4, portraitY + 4, portraitW - 8, portraitH - 8, 6);
         ctx.stroke();
-        ctx.fillStyle = oGrad;
-        ctx.font = 'bold 14px fantasy, papyrus';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('=', iconCX, iconCY);
-        // Text
-        ctx.fillStyle = '#CFC';
-        ctx.font = 'bold 9px fantasy, papyrus';
-        ctx.fillText('NO PHOTO', iconCX, portraitY + 68);
-        ctx.fillStyle = '#666';
-        ctx.font = '7px fantasy, papyrus';
-        ctx.fillText('Tap O logo to add', iconCX, portraitY + 80);
+        ctx.strokeStyle = 'rgba(0,0,0,0.6)';
+        ctx.beginPath();
+        ctx.roundRect(portraitX, portraitY, portraitW, portraitH, 8);
+        ctx.stroke();
+
+        // Player name below photo inside frame
+        if (typeof playerName !== 'undefined' && playerName && playerName !== 'YOU') {
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 9px fantasy, papyrus';
+            ctx.textAlign = 'center';
+            ctx.fillText(playerName.substring(0,12).toUpperCase(), portraitX + portraitW/2, portraitY + portraitH - 8);
+        }
+
+        // Gloss
+        const glossGrad = ctx.createLinearGradient(portraitX, portraitY, portraitX, portraitY + 25);
+        glossGrad.addColorStop(0, 'rgba(255,255,255,0.3)');
+        glossGrad.addColorStop(1, 'rgba(255,255,255,0)');
+        ctx.fillStyle = glossGrad;
+        ctx.beginPath();
+        ctx.roundRect(portraitX, portraitY, portraitW, 25, 8);
+        ctx.fill();
+        ctx.restore();
+    } else {
+        // Achievements are showing — clear any stale portrait box so taps don't trigger photo
+        window._gameOverPortraitBox = null;
     }
-    ctx.restore(); // end clip
-
-    // Bevel + border
-    ctx.strokeStyle = 'rgba(255,255,255,0.25)';
-    ctx.lineWidth = 1;
-    ctx.beginPath();
-    ctx.roundRect(portraitX + 4, portraitY + 4, portraitW - 8, portraitH - 8, 6);
-    ctx.stroke();
-    ctx.strokeStyle = 'rgba(0,0,0,0.6)';
-    ctx.beginPath();
-    ctx.roundRect(portraitX, portraitY, portraitW, portraitH, 8);
-    ctx.stroke();
-
-    // Player name below photo inside frame
-    if (typeof playerName !== 'undefined' && playerName && playerName !== 'YOU') {
-        ctx.fillStyle = '#FFD700';
-        ctx.font = 'bold 9px fantasy, papyrus';
-        ctx.textAlign = 'center';
-        ctx.fillText(playerName.substring(0,12).toUpperCase(), portraitX + portraitW/2, portraitY + portraitH - 8);
-    }
-
-    // Gloss
-    const glossGrad = ctx.createLinearGradient(portraitX, portraitY, portraitX, portraitY + 25);
-    glossGrad.addColorStop(0, 'rgba(255,255,255,0.3)');
-    glossGrad.addColorStop(1, 'rgba(255,255,255,0)');
-    ctx.fillStyle = glossGrad;
-    ctx.beginPath();
-    ctx.roundRect(portraitX, portraitY, portraitW, 25, 8);
-    ctx.fill();
-    ctx.restore();
 }
 
 // ===========================================
@@ -10489,7 +10496,7 @@ for (let btn of buttons) {
 
 
 // ✅ Only run strategic numbers exemption if there are safe numbers available
-if (advAns === 1 && l < 2) {
+if (advAns === 1 && l < 1) {
     const strategicNumbers = [attacked[0], attacked[1], attacked[2]];
 
     strategicNumbers.forEach((targetCell) => {
