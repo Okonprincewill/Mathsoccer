@@ -5633,6 +5633,13 @@ playSound(welcome);
     speakText("Game reset. Factor is 1.");
         
 n++;
+if(h===1){
+h=0
+r++;
+setTimeout(()=>{
+compMove();
+},5000);
+}
 }
 
 // ===========================================
@@ -5718,10 +5725,9 @@ function undoMove() {
     }
     
     // ✅ Store current state before undoing (for redo to work properly)
-    // saveGameState(); // Only if you want to save the current state before undo
-    
-    currentHistoryIndex--;
+    // saveGameState(); // Only if you want to save the current state before undo  
     restoreState(currentHistoryIndex);
+    currentHistoryIndex--;
     renderStats();
     drawToggles();
     generateNextTurnDisplay();
@@ -5737,10 +5743,9 @@ function redoMove() {
     if (currentHistoryIndex >= moveHistory.length - 1) {
         speakText("Nothing to redo");
         return false;
-    }
-    
-    currentHistoryIndex++;
+    }       
     restoreState(currentHistoryIndex);
+    currentHistoryIndex++;
     renderStats();
     drawToggles();
     generateNextTurnDisplay();
@@ -5856,7 +5861,7 @@ function restoreState(index) {
 }
 
 
-function saveGame() {
+function saveGame() { 
     try {
         const saveData = {
             version: "1.0",
@@ -5946,8 +5951,35 @@ function loadGame() {
             speakText("No saved game found");
             return false;
         }
-      matchInProgress = false;   
+        
         const save = JSON.parse(savedData);
+        
+        // ===========================================
+        // ✅ SIDE CHECK — Saved game must match current side
+        // ===========================================
+        if (save.side !== side) {
+            const savedColor = (save.side === 0) ? 'Red' : 'Blue';
+            const currentColor = (side === 0) ? 'Red' : 'Blue';
+            
+            const msg = `No saved game for ${currentColor}. A saved game exists for ${savedColor}. Play ${savedColor} to access it.`;
+            
+            // Show message in the info panel
+            va = "";
+            vb = "";
+            vc = `No saved game for ${currentColor}.`;
+            vd = `A saved game exists for ${savedColor}.`;
+            ve = `Play ${savedColor} to access it.`;
+            vf = "";
+            vg = "";
+            vh = (side === 0) ? 'red' : 'blue';
+            statDraw(va, vb, vc, vd, ve, vf, vg, vh);
+            
+            speakText(msg);
+            console.log(`Load blocked: current side=${side}, saved side=${save.side}`);
+            return false;
+        }
+        
+        matchInProgress = false;
         
         // Cancel any ongoing timers/animations
         if (timerCom) clearTimeout(timerCom);
@@ -6085,9 +6117,24 @@ function loadGame() {
         const isRedTurn = (r % 2 !== 0);
         const currentTeam = isRedTurn ? 'red' : 'blue';
         
-     generateNextTurnDisplay();          
+        generateNextTurnDisplay();
         statDraw(va, vb, vc, vd, ve, vf, vg, vh);
         speakText(`Game loaded. ${currentTeam}'s turn. Factor is ${problemFactor}`);
+        
+        // ===========================================
+        // ✅ RESUME AI MOVE IF IT WAS AI'S TURN (h === 0)
+        // ===========================================
+        if (save.h === 0) {
+            console.log("Resuming AI move...");
+            
+            // Cancel any stale timer
+            if (timerCom) clearTimeout(timerCom);
+            
+            // Give speech time to finish, then let the AI move
+            timerCom = setTimeout(function() {
+                compMove();
+            }, 8000);
+        }
         
         console.log("Game loaded from save");
         return true;
@@ -6599,177 +6646,6 @@ function resetStatistics() {
         console.log('✅ Stats reset. Games array length:', lifetimeStats.games.length);
     }
 }
-/*
-// ===========================================
-// LEADERBOARD PAGE
-// ===========================================
-
-let viewingLeaderboard = false;
-let leaderboardData = []; // Will be fetched from server or local mock
-
-// Mock leaderboard data (for offline/local play)
-function generateMockLeaderboard() {
-    return [
-        { rank: 1, name: "MathMaster99", games: 245, wins: 198, winRate: 80.8, points: 1250 },
-        { rank: 2, name: "GoalGetter", games: 189, wins: 142, winRate: 75.1, points: 980 },
-        { rank: 3, name: "FactorKing", games: 156, wins: 110, winRate: 70.5, points: 820 },
-        { rank: 4, name: "SoccerMath", games: 134, wins: 89, winRate: 66.4, points: 710 },
-        { rank: 5, name: "NumberNinja", games: 112, wins: 72, winRate: 64.3, points: 605 },
-        { rank: 6, name: "CalculateThis", games: 98, wins: 58, winRate: 59.2, points: 520 },
-        { rank: 7, name: "QueenMove", games: 87, wins: 50, winRate: 57.5, points: 445 },
-        { rank: 8, name: "WhiteSquare", games: 76, wins: 42, winRate: 55.3, points: 390 },
-        { rank: 9, name: "YellowZone", games: 65, wins: 34, winRate: 52.3, points: 335 },
-        { rank: 10, name: "MathsoccerPro", games: 54, wins: 27, winRate: 50.0, points: 290 }
-    ];
-}
-
-// Fetch real leaderboard from backend (when you have one)
-async function fetchLeaderboard() {
-    try {
-        // Replace with your actual API endpoint
-        const response = await fetch('https://your-api.com/mathsoccer/leaderboard');
-        if (response.ok) {
-            leaderboardData = await response.json();
-        } else {
-            leaderboardData = generateMockLeaderboard();
-        }
-    } catch(e) {
-        console.log("Using mock leaderboard data");
-        leaderboardData = generateMockLeaderboard();
-    }
-}
-
-// Submit player score to leaderboard
-async function submitScoreToLeaderboard(playerName, stats) {
-    try {
-        const response = await fetch('https://your-api.com/mathsoccer/submit', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                name: playerName,
-                games: stats.totalGames,
-                wins: stats.totalWins,
-                points: stats.totalPoints,
-                timestamp: new Date().toISOString()
-            })
-        });
-        return response.ok;
-    } catch(e) {
-        console.log("Offline - score saved locally");
-        // Save to local queue for later sync
-        localStorage.setItem('pending_submission', JSON.stringify({ name: playerName, stats: stats }));
-        return false;
-    }
-}
-
-function renderLeaderboardPage() {
-g=7;
-    ctx.clearRect(0, 0, cW, cH);
-       drawGlossyBackground();
-    ctx.fillStyle = '#CFC';
-    ctx.font = 'bold 22px fantasy, papyrus';
-    ctx.textAlign = 'center';
-    ctx.fillText('GLOBAL LEADERBOARD', 170, 30);
-    
-    if (!leaderboardData.length) {
-        ctx.fillStyle = 'white';
-        ctx.font = '14px fantasy, papyrus';
-        ctx.fillText('Loading leaderboard...', 190, 150);
-    } else {
-        // Table headers
-        const headers = ['Rank', 'Player', 'Games', 'Wins', 'Win%', 'Pts'];
-        const colWidths = [40, 90, 45, 45, 45, 45];
-        let startX =20;
-        let yPos = 60;
-        
-        ctx.fillStyle = '#032';
-        ctx.fillRect(startX - 5, yPos - 18, 320, 22);
-        ctx.fillStyle = '#CFC';
-        ctx.font = 'bold 10px fantasy, papyrus';
-        
-        let xPos = startX;
-        headers.forEach((header, i) => {
-            ctx.fillText(header, xPos + colWidths[i] / 2, yPos + 5);
-            xPos += colWidths[i];
-        });
-        
-        yPos += 5;
-        
-        leaderboardData.forEach((player, idx) => {
-            const rowColor = (idx % 2 === 0) ? '#CFC' : '#AFA';
-            ctx.fillStyle = rowColor;
-            ctx.fillRect(startX - 10, yPos + 10, 320, 18);
-            
-            ctx.fillStyle = 'black';
-            ctx.font = '10px fantasy, papyrus';
-            
-            xPos = startX;
-            
-            // Rank medal
-            if (player.rank === 1) ctx.fillStyle = '#FFD700';
-            else if (player.rank === 2) ctx.fillStyle = '#C0C0C0';
-            else if (player.rank === 3) ctx.fillStyle = '#CD7F32';
-            else ctx.fillStyle = 'black';
-            ctx.fillText('#' + player.rank, xPos + 15, yPos+20);
-            xPos += colWidths[0];
-            
-            ctx.fillStyle = 'black';
-            ctx.fillText(player.name.substring(0, 8), xPos + 5, yPos+20);
-            xPos += colWidths[1];
-            
-            ctx.fillText(player.games, xPos + 15, yPos+20);
-            xPos += colWidths[2];
-            
-            ctx.fillText(player.wins, xPos + 15, yPos+20);
-            xPos += colWidths[3];
-            
-            ctx.fillText(player.winRate.toFixed(1) + '%', xPos + 12, yPos+20);
-            xPos += colWidths[4];
-            
-            ctx.fillText(player.points, xPos + 15, yPos+20);
-            
-            yPos += 18;
-        });
-        
-        // Your rank (if player has data)
-        if (lifetimeStats.totalGames > 0) {
-            yPos += 10;
-            ctx.fillStyle = '#FFD700';
-            ctx.font = 'bold 10px fantasy, papyrus';
-            ctx.fillText('YOUR STATS', 170, yPos);
-            yPos += 15;
-            
-            ctx.fillStyle = 'white';
-            ctx.font = '9px fantasy, papyrus';
-            ctx.fillText(`Games: ${lifetimeStats.totalGames} | Wins: ${lifetimeStats.totalWins} | Points: ${lifetimeStats.totalPoints}`, 170, yPos);
-        }
-    }
-    
-    // Buttons
-    ctx.fillStyle = '#28B463';
-    ctx.fillRect(30, 540, 80, 30);
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 12px fantasy, papyrus';
-    ctx.fillText('STATS', 70, 558);
-    
-    ctx.fillStyle = '#8E44AD';
-    ctx.fillRect(230, 540, 80, 30);
-ctx.fillStyle = 'white';
-    ctx.font = 'bold 12px fantasy, papyrus';
-    ctx.fillText('BACK', 270, 558);
-}
-
-// Submit player name to leaderboard (first time)
-function promptPlayerName() {
-    let playerName = localStorage.getItem('player_name');
-    if (!playerName && lifetimeStats.totalGames > 0) {
-        playerName = prompt('Enter your name for the leaderboard:', 'Player');
-        if (playerName) {
-            localStorage.setItem('player_name', playerName);
-            submitScoreToLeaderboard(playerName, lifetimeStats);
-        }
-    }
-}*/
 
 
 let splashStartTime = null;
@@ -6846,7 +6722,12 @@ function logo() {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText('Concentrate. Calculate. Celebrate.', 180, 414);  // Y+25
-ctx.fillText('Version 1.8.0', 180, 780);  // Y+25
+ctx.fillText('Version 1.8.7', 180, 780);  // Y+25
+
+// Loading text
+    ctx.fillStyle = '#CFC';
+    ctx.font = 'bold 12px fantasy, papyrus';
+    ctx.fillText('Loading...', 180, 730);  
 
     ctx.restore();
     
@@ -6906,12 +6787,7 @@ ctx.fillText('Version 1.8.0', 180, 780);  // Y+25
     // Animated progress (will be updated in animation loop)
     ctx.fillStyle = '#CFC';
     ctx.fillRect(70, 700, 0, 8); // Will animate
-    
-    // Loading text
-    ctx.fillStyle = '#CFC';
-    ctx.font = 'bold 12px fantasy, papyrus';
-    ctx.fillText('Loading...', 180, 730);
-
+        
     splashStartTime = Date.now();
     startLoadingAnimation();
     
@@ -9186,11 +9062,11 @@ function generateNextTurnDisplay() {
         const currentTeam = isRedTurn ? 'red' : 'blue';
         const capitalizedTeam = capitalizeFirst(currentTeam);
         
-        va = `Waiting for ${capitalizedTeam} AI to move.`;
-        vb = "Selecting a destination number...";
-        vc = "";
+        vc = `Waiting for ${capitalizedTeam} AI to move.`;
+        ve = "Selecting a destination number...";
+        va = "";
+        vb = "";
         vd = "";
-        ve = "";
         vf = "";
         vg = "";
         vh = currentTeam;  // Keep original case for color
@@ -12261,7 +12137,7 @@ else {
                                 }
                                 const isLinkedToCriticalButton4 = (linkedButton4 && isCriticalDefender(linkedButton4));
                                 
-                                if (l < 1 &&((hasOpponentLink && !canBlockAttack(ansList, whiteButton, whiteTarget)) || isLinkedToCriticalButton4)) {
+                                if (l < 2 && ((hasOpponentLink && !canBlockAttack(ansList, whiteButton, whiteTarget)) || isLinkedToCriticalButton4)) {
                                     exemptAnswers.add(ansList);
                                     logExemptedNumber(ansList.id, "to prevent rebound on "+whiteTarget.id);
                                 }
@@ -12407,7 +12283,7 @@ if (positions[4] && positions[5] &&
                                     }
                                     const isLinkedToCriticalButtonWing = (linkedButtonWing && isCriticalDefender(linkedButtonWing));
                                     
-                                    if (l < 2 && ((!defFac2CanBlockWhite1 && ansList !== positions[4] && ansList !== positions[0] && !canBlockAttack(ansList, opponentButtonA, positions[4])) || isLinkedToCriticalButtonWing)) {
+                                    if (l < 1 && ((!defFac2CanBlockWhite1 && ansList !== positions[4] && ansList !== positions[0] && !canBlockAttack(ansList, opponentButtonA, positions[4])) || isLinkedToCriticalButtonWing)) {
                                         exemptAnswers.add(ansList);
                                         logExemptedNumber(ansList.id, "to prevent dribbling");
                                     }
@@ -12488,7 +12364,7 @@ if (positions[4] && positions[5] &&
                                     }
                                     const isLinkedToCriticalButtonWingB = (linkedButtonWingB && isCriticalDefender(linkedButtonWingB));
                                 
-                                    if (l < 2 && ((!defFac2CanBlockWhite0 && ansList !== positions[5] && ansList !== positions[1] && !canBlockAttack(ansList, opponentButtonB, positions[5])) || isLinkedToCriticalButtonWingB)) {
+                                    if (l < 1 && ((!defFac2CanBlockWhite0 && ansList !== positions[5] && ansList !== positions[1] && !canBlockAttack(ansList, opponentButtonB, positions[5])) || isLinkedToCriticalButtonWingB)) {
                                         exemptAnswers.add(ansList);
                                         logExemptedNumber(ansList.id, "to prevent dribbling");
                                     }
